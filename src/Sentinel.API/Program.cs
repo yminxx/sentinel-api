@@ -1,4 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using Sentinel.Infrastructure.Persistence;
+using DotNetEnv;
+
+Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
+    
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString =
+    Environment.GetEnvironmentVariable("CONNECTION_STRING");
+Console.WriteLine(connectionString);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    options.UseNpgsql(connectionString));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -7,7 +20,7 @@ builder.Services.AddSwaggerGen();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+    
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
