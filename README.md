@@ -20,7 +20,7 @@ This project is focused on showcasing backend engineering practices including au
 ## Tech Stack
 
 * C#
-* ASP.NET Core (.NET 8)
+* ASP.NET Core (.NET 10)
 * Entity Framework Core
 * PostgreSQL
 * ASP.NET Identity
@@ -45,7 +45,7 @@ src/
 
 * [x] Repository setup
 * [x] Clean Architecture setup
-* [ ] Database configuration
+* [x] Database configuration
 * [ ] JWT Authentication
 * [ ] Refresh Tokens
 * [ ] RBAC
