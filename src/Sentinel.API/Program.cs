@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using DotNetEnv;
 using Sentinel.Infrastructure.Persistence;
 using Sentinel.Application.Abstractions.Authentication;
 using Sentinel.Infrastructure.Authentication;
-using System.Text;
-using DotNetEnv;
+using Sentinel.Application.Abstractions.Persistence;
+using Sentinel.Infrastructure.Persistence.Repositories;
 
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
     
@@ -28,6 +30,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
