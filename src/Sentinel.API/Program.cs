@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
-using Sentinel.Infrastructure.Persistence;
 using Sentinel.Application.Abstractions.Authentication;
-using Sentinel.Infrastructure.Authentication;
 using Sentinel.Application.Abstractions.Persistence;
+using Sentinel.Application.Authentication.Services;
+
+using Sentinel.Infrastructure.Authentication;
+using Sentinel.Infrastructure.Persistence;
 using Sentinel.Infrastructure.Persistence.Repositories;
 
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
@@ -28,9 +30,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Authentication
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+// Persistence
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Application Services
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
