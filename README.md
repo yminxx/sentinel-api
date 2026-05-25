@@ -23,7 +23,6 @@ This project is focused on showcasing backend engineering practices including au
 * ASP.NET Core (.NET 10)
 * Entity Framework Core
 * PostgreSQL
-* ASP.NET Identity
 * JWT Bearer Authentication
 * FluentValidation
 * Serilog
@@ -46,10 +45,11 @@ src/
 * [x] Repository setup
 * [x] Clean Architecture setup
 * [x] Database configuration
-* [ ] JWT Authentication
-* [ ] Refresh Tokens
+* [x] JWT Authentication
+* [ ] Validation & Exception Handling
+* [ ] Protected Endpoints
 * [ ] RBAC
-* [ ] Validation pipeline
+* [ ] Refresh Tokens
 * [ ] Audit Logging
 * [ ] Rate Limiting
 * [ ] Docker support
