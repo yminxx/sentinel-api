@@ -16,6 +16,7 @@ using Sentinel.Infrastructure.Persistence;
 using Sentinel.Infrastructure.Persistence.Repositories;
 
 using Sentinel.Application.Authentication.Validators;
+using Sentinel.API.Middleware;
 
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
     
@@ -75,6 +76,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
