@@ -48,7 +48,7 @@ src/
 * [x] JWT Authentication
 * [x] Validation & Exception Handling
 * [x] Protected Endpoints
-* [ ] RBAC
+* [x] RBAC
 * [ ] Refresh Tokens
 * [ ] Audit Logging
 * [ ] Rate Limiting
