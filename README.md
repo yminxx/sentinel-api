@@ -47,7 +47,7 @@ src/
 * [x] Database configuration
 * [x] JWT Authentication
 * [x] Validation & Exception Handling
-* [ ] Protected Endpoints
+* [x] Protected Endpoints
 * [ ] RBAC
 * [ ] Refresh Tokens
 * [ ] Audit Logging
