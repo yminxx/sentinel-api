@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
+
+using FluentValidation;
+using FluentValidation.AspNetCore;
+
 using Sentinel.Application.Abstractions.Authentication;
 using Sentinel.Application.Abstractions.Persistence;
 using Sentinel.Application.Authentication.Services;
@@ -10,6 +14,8 @@ using Sentinel.Application.Authentication.Services;
 using Sentinel.Infrastructure.Authentication;
 using Sentinel.Infrastructure.Persistence;
 using Sentinel.Infrastructure.Persistence.Repositories;
+
+using Sentinel.Application.Authentication.Validators;
 
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
     
@@ -28,6 +34,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -40,6 +47,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Application Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
