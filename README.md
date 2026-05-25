@@ -46,7 +46,7 @@ src/
 * [x] Clean Architecture setup
 * [x] Database configuration
 * [x] JWT Authentication
-* [ ] Validation & Exception Handling
+* [x] Validation & Exception Handling
 * [ ] Protected Endpoints
 * [ ] RBAC
 * [ ] Refresh Tokens
