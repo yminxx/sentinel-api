@@ -1,6 +1,6 @@
 ﻿namespace Sentinel.Application.Common;
 
-public class ApiResponse<T>
+public class OperationResult<T>
 {
     public bool Success { get; set; }
 

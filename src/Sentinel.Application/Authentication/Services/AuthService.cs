@@ -3,6 +3,7 @@ using Sentinel.Application.Abstractions.Persistence;
 using Sentinel.Application.Authentication.DTOs;
 using Sentinel.Application.Authentication.Responses;
 using Sentinel.Domain.Entities;
+using Sentinel.Application.Common;
 
 namespace Sentinel.Application.Authentication.Services;
 
@@ -22,13 +23,17 @@ public class AuthService : IAuthService
         _jwtProvider = jwtProvider;
     }
 
-    public async Task RegisterAsync(RegisterRequest request)
+    public async Task<OperationResult<object>> RegisterAsync(RegisterRequest request)
     {
         var existingUser = await _userRepository.GetByEmailAsync(request.Email);
 
         if (existingUser is not null)
         {
-            throw new Exception("User Already Exists");
+            return new OperationResult<object>
+            {
+                Success = false,
+                Message = "User Already Exists"
+            };
         }
 
         var hashedPassword = _passwordHasher.Hash(request.Password);
@@ -45,22 +50,36 @@ public class AuthService : IAuthService
 
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
+        
+        return new OperationResult<object>
+        {
+            Success = true,
+            Message = "User Registered Successfully"
+        };
     }
 
-    public async Task<AuthResponse> LoginAsync(LoginRequest request)
+    public async Task<OperationResult<AuthResponse>> LoginAsync(LoginRequest request)
     {
-        var user = await _userRepository.GetByEmailAsync(request.Email);
-
+        var user = await _userRepository.GetByEmailAsync(request.Email); 
+        
         if (user is null)
         {
-            throw new Exception("Invalid Credentials");
+            return new OperationResult<AuthResponse>
+            {
+                Success = false,
+                Message = "Invalid email or password."
+            };
         }
         
-        var isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
+        var isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash); 
         
         if (!isPasswordValid)
         {
-            throw new Exception("Invalid Credentials");
+            return new OperationResult<AuthResponse>
+            {
+                Success = false,
+                Message = "Invalid email or password."
+            };
         }
 
         var token = _jwtProvider.GenerateToken(
@@ -68,9 +87,14 @@ public class AuthService : IAuthService
             user.Email,
             user.Role);
 
-        return new AuthResponse
+        return new OperationResult<AuthResponse>
         {
-            Token = token
+            Success = true,
+            Message = "Login successful.",
+            Data = new AuthResponse
+            {
+                Token = token
+            }
         };
     }
 }
