@@ -170,4 +170,25 @@ public class AuthService : IAuthService
             },
         };
     }
+
+    public async Task<OperationResult<object>> LogoutAsync(RefreshTokenRequest request)
+    {
+        var existingRefreshToken = await _refreshTokenRepository.GetByTokenAsync(
+            request.RefreshToken
+        );
+
+        if (existingRefreshToken is null)
+        {
+            return new OperationResult<object>
+            {
+                Success = false,
+                Message = "Invalid refresh token.",
+            };
+        }
+
+        existingRefreshToken.IsRevoked = true;
+        await _refreshTokenRepository.SaveChangesAsync();
+
+        return new OperationResult<object> { Success = true, Message = "Logout successful." };
+    }
 }
