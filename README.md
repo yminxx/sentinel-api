@@ -49,7 +49,7 @@ src/
 * [x] Validation & Exception Handling
 * [x] Protected Endpoints
 * [x] RBAC
-* [ ] Refresh Tokens
+* [x] Refresh Tokens
 * [ ] Audit Logging
 * [ ] Rate Limiting
 * [ ] Docker support
