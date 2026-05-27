@@ -1,37 +1,30 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
-
 using FluentValidation;
 using FluentValidation.AspNetCore;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Sentinel.API.Middleware;
 using Sentinel.Application.Abstractions.Authentication;
 using Sentinel.Application.Abstractions.Persistence;
 using Sentinel.Application.Authentication.Services;
-
+using Sentinel.Application.Authentication.Validators;
 using Sentinel.Infrastructure.Authentication;
 using Sentinel.Infrastructure.Persistence;
 using Sentinel.Infrastructure.Persistence.Repositories;
 
-using Sentinel.Application.Authentication.Validators;
-using Sentinel.API.Middleware;
-
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
-    
+
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString =
-    Environment.GetEnvironmentVariable("CONNECTION_STRING");
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
-var jwtSecret =
-    Environment.GetEnvironmentVariable("JWT_SECRET");
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
 
 Console.WriteLine(connectionString);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -45,13 +38,14 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 // Persistence
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // Application Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -60,16 +54,11 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSecret!)
-            )
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!)),
         };
     });
-
 builder.Services.AddAuthorization();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

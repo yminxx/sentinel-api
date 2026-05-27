@@ -12,15 +12,18 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtProvider _jwtProvider;
+	private readonly IRefreshTokenRepository _refreshTokenRepository;
     public AuthService(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
-        IJwtProvider jwtProvider)
+        IJwtProvider jwtProvider,
+		IRefreshTokenRepository refreshTokenRepository)
         
     { 
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtProvider = jwtProvider;
+		_refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<OperationResult<object>> RegisterAsync(RegisterRequest request)
@@ -82,10 +85,25 @@ public class AuthService : IAuthService
             };
         }
 
-        var token = _jwtProvider.GenerateToken(
+        var accessToken = _jwtProvider.GenerateToken(
             user.Id,
             user.Email,
             user.Role);
+
+		var refreshToken = Guid.NewGuid().ToString();
+
+		var refreshTokenEntity = new RefreshToken
+		{
+    		Id = Guid.NewGuid(),
+    		Token = refreshToken,
+    		ExpiresAt = DateTime.UtcNow.AddDays(7),
+    		IsRevoked = false,
+    		CreatedAt = DateTime.UtcNow,
+    		UserId = user.Id
+		};
+
+		await _refreshTokenRepository.AddAsync(refreshTokenEntity);
+		await _refreshTokenRepository.SaveChangesAsync();
 
         return new OperationResult<AuthResponse>
         {
@@ -93,7 +111,8 @@ public class AuthService : IAuthService
             Message = "Login successful.",
             Data = new AuthResponse
             {
-                Token = token
+                AccessToken = accessToken,
+    			RefreshToken = refreshToken
             }
         };
     }
