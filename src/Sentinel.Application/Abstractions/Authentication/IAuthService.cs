@@ -8,4 +8,5 @@ public interface IAuthService
 {
     Task<OperationResult<object>> RegisterAsync(RegisterRequest request);
     Task<OperationResult<AuthResponse>> LoginAsync(LoginRequest request);
+    Task<OperationResult<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest request);
 }

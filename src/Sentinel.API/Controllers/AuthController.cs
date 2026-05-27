@@ -7,8 +7,9 @@ namespace Sentinel.API.Controllers;
 [ApiController]
 [Route("")]
 public class AuthController : ControllerBase
-{ 
+{
     private readonly IAuthService _authService;
+
     public AuthController(IAuthService authService)
     {
         _authService = authService;
@@ -38,5 +39,18 @@ public class AuthController : ControllerBase
         }
 
         return Ok(response);
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken(RefreshTokenRequest request)
+    {
+        var result = await _authService.RefreshTokenAsync(request);
+
+        if (!result.Success)
+        {
+            return Unauthorized(result);
+        }
+
+        return Ok(result);
     }
 }
