@@ -50,7 +50,7 @@ src/
 * [x] Protected Endpoints
 * [x] RBAC
 * [x] Refresh Tokens
-* [ ] Audit Logging
+* [x] Audit Logging
 * [ ] Rate Limiting
 * [ ] Docker support
 * [ ] Unit Testing
