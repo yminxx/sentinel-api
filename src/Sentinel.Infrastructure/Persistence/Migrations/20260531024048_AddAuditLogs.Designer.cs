@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Sentinel.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Sentinel.Infrastructure.Persistence;
 namespace Sentinel.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260531024048_AddAuditLogs")]
+    partial class AddAuditLogs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,12 +38,11 @@ namespace Sentinel.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("AuditLogs");
                 });
@@ -104,17 +106,6 @@ namespace Sentinel.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Sentinel.Domain.Entities.AuditLog", b =>
-                {
-                    b.HasOne("Sentinel.Domain.Entities.User", "User")
-                        .WithMany("AuditLogs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Sentinel.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Sentinel.Domain.Entities.User", "User")
@@ -128,8 +119,6 @@ namespace Sentinel.Infrastructure.Migrations
 
             modelBuilder.Entity("Sentinel.Domain.Entities.User", b =>
                 {
-                    b.Navigation("AuditLogs");
-
                     b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618

@@ -39,6 +39,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 // Persistence
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
 // Application Services
 builder.Services.AddScoped<IAuthService, AuthService>();

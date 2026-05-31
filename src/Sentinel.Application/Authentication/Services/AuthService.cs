@@ -13,18 +13,21 @@ public class AuthService : IAuthService
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtProvider _jwtProvider;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
     public AuthService(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
         IJwtProvider jwtProvider,
-        IRefreshTokenRepository refreshTokenRepository
+        IRefreshTokenRepository refreshTokenRepository,
+        IAuditLogRepository auditLogRepository
     )
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtProvider = jwtProvider;
         _refreshTokenRepository = refreshTokenRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public async Task<OperationResult<object>> RegisterAsync(RegisterRequest request)
@@ -98,6 +101,17 @@ public class AuthService : IAuthService
 
         await _refreshTokenRepository.AddAsync(refreshTokenEntity);
         await _refreshTokenRepository.SaveChangesAsync();
+
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Action = "LOGIN",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        await _auditLogRepository.AddAsync(auditLog);
+        await _auditLogRepository.SaveChangesAsync();
 
         return new OperationResult<AuthResponse>
         {
