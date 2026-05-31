@@ -54,6 +54,17 @@ public class AuthService : IAuthService
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
 
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Action = "REGISTER",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        await _auditLogRepository.AddAsync(auditLog);
+        await _auditLogRepository.SaveChangesAsync();
+
         return new OperationResult<object>
         {
             Success = true,
@@ -173,6 +184,17 @@ public class AuthService : IAuthService
         await _refreshTokenRepository.AddAsync(refreshTokenEntity);
         await _refreshTokenRepository.SaveChangesAsync();
 
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Action = "REFRESH_TOKEN",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        await _auditLogRepository.AddAsync(auditLog);
+        await _auditLogRepository.SaveChangesAsync();
+
         return new OperationResult<AuthResponse>
         {
             Success = true,
@@ -202,6 +224,17 @@ public class AuthService : IAuthService
 
         existingRefreshToken.IsRevoked = true;
         await _refreshTokenRepository.SaveChangesAsync();
+
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = existingRefreshToken.UserId,
+            Action = "LOGOUT",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        await _auditLogRepository.AddAsync(auditLog);
+        await _auditLogRepository.SaveChangesAsync();
 
         return new OperationResult<object> { Success = true, Message = "Logout successful." };
     }
