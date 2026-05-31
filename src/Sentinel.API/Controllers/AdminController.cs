@@ -72,6 +72,19 @@ public class AdminController : ControllerBase
     {
         var auditLogs = await _auditLogRepository.GetAllAsync();
 
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Action = "VIEW_AUDIT_LOGS",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        await _auditLogRepository.AddAsync(auditLog);
+        await _auditLogRepository.SaveChangesAsync();
+
         return Ok(
             new
             {
