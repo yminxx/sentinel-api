@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Sentinel.Application.Abstractions.Persistence;
 using Sentinel.Domain.Entities;
 
@@ -20,5 +21,10 @@ public class AuditLogRepository : IAuditLogRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<AuditLog>> GetAllAsync()
+    {
+        return await _context.AuditLogs.OrderByDescending(x => x.CreatedAt).ToListAsync();
     }
 }

@@ -65,4 +65,26 @@ public class AdminController : ControllerBase
             }
         );
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("audit-logs")]
+    public async Task<IActionResult> GetAuditLogs()
+    {
+        var auditLogs = await _auditLogRepository.GetAllAsync();
+
+        return Ok(
+            new
+            {
+                success = true,
+                message = "Audit logs retrieved successfully.",
+                data = auditLogs.Select(x => new
+                {
+                    x.Id,
+                    x.UserId,
+                    x.Action,
+                    x.CreatedAt,
+                }),
+            }
+        );
+    }
 }
