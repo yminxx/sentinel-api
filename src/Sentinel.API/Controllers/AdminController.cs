@@ -40,6 +40,17 @@ public class AdminController : ControllerBase
 
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Action = "VIEW_USERS",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        await _auditLogRepository.AddAsync(auditLog);
+        await _auditLogRepository.SaveChangesAsync();
+
         return Ok(
             new
             {
